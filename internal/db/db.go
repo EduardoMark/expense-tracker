@@ -38,3 +38,7 @@ func Init() {
 func AutoMigrate(model any) {
 	DB.AutoMigrate(&model)
 }
+
+func Conn() *gorm.DB {
+	return DB
+}
