@@ -9,4 +9,5 @@ func main() {
 	// Init database
 	db.Init()
 	db.AutoMigrate(models.User{})
+	db.AutoMigrate(models.Expense{})
 }

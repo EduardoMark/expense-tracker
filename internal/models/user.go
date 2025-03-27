@@ -10,23 +10,24 @@ import (
 
 type User struct {
 	gorm.Model
-	Email    string `gorm:"type:varchar(100); uniqueIndex; not null" json:"email"`
-	Password string `gorm:"type:varchar(100); not null" json:"password"`
+	Email    string     `gorm:"type:varchar(100); uniqueIndex; not null" json:"email"`
+	Password string     `gorm:"type:varchar(100); not null" json:"password"`
+	Expenses []*Expense `gorm:"foreignKey:UserID" json:"expenses"`
 }
 
-func Save(user *User) error {
+func (m *User) Save() error {
 	db := db.Conn()
 
-	if user.ID == 0 {
-		user.CreatedAt = time.Now()
-		err := db.Create(user).Error
+	if m.ID == 0 {
+		m.CreatedAt = time.Now()
+		err := db.Create(m).Error
 		if err != nil {
 			return fmt.Errorf("error on create new user: %w", err)
 		}
 		return nil
 	}
 
-	err := db.Save(user).Error
+	err := db.Save(m).Error
 	if err != nil {
 		return fmt.Errorf("error on save user: %w", err)
 	}
@@ -58,17 +59,6 @@ func FindAllUsers() (*[]*User, error) {
 	}
 
 	return &users, nil
-}
-
-func UpdateUser(id uint, user User) error {
-	db := db.Conn()
-
-	result := db.Model(User{}).Where("id = ?", id).Updates(user)
-	if result.Error != nil {
-		return fmt.Errorf("error on update user: %w", result.Error)
-	}
-
-	return nil
 }
 
 func DeleteUser(id uint) error {
