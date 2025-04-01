@@ -10,7 +10,7 @@ func userRoutes(r *gin.Engine) {
 	routes.POST("/register", handlers.Create)
 	routes.POST("/login", handlers.Login)
 	routes.GET("", handlers.FindAllUsers)
-	routes.GET("/:id")
+	routes.GET("/:id", handlers.FindOne)
 	routes.PUT("/:id")
 	routes.DELETE("/:id")
 }

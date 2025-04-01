@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/EduardoMark/expense-tracker/internal/models"
 	"github.com/gin-gonic/gin"
@@ -86,4 +87,26 @@ func FindAllUsers(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"users": result})
+}
+
+func FindOne(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	idUint, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+
+	user, err := models.FindOneUser(uint(idUint))
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+	}
+
+	result := ResponseJSON{
+		ID:    user.ID,
+		Email: user.Email,
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"user": result})
 }
