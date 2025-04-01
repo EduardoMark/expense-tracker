@@ -48,6 +48,19 @@ func FindOneUser(id uint) (*User, error) {
 	return &user, nil
 }
 
+func FindOneUserByEmail(email string) (*User, error) {
+	user := User{}
+	db := db.Conn()
+
+	result := db.Where("email = ?", email).First(&user)
+
+	if result.Error != nil {
+		return nil, fmt.Errorf("error when find user: %w", result.Error)
+	}
+
+	return &user, nil
+}
+
 func FindAllUsers() (*[]*User, error) {
 	var users []*User
 	db := db.Conn()
