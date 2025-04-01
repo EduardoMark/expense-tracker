@@ -13,7 +13,7 @@ type RequestBody struct {
 	Password string `json:"password" validate:"required"`
 }
 
-type ResponseBody struct {
+type ResponseJSON struct {
 	ID    uint   `json:"id"`
 	Email string `json:"email"`
 }
@@ -68,4 +68,22 @@ func Create(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusCreated, nil)
+}
+
+func FindAllUsers(ctx *gin.Context) {
+	users, err := models.FindAllUsers()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
+
+	var result []ResponseJSON
+	for _, user := range *users {
+		result = append(result, ResponseJSON{
+			ID:    user.ID,
+			Email: user.Email,
+		})
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"users": result})
 }
