@@ -4,18 +4,21 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/EduardoMark/expense-tracker/internal/auth"
 	"github.com/EduardoMark/expense-tracker/internal/models"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type RequestBody struct {
+	Name     string `json:"name" validate:"required"`
 	Email    string `json:"email" validate:"required"`
 	Password string `json:"password" validate:"required"`
 }
 
 type ResponseJSON struct {
 	ID    uint   `json:"id"`
+	Name  string `json:"name"`
 	Email string `json:"email"`
 }
 
@@ -39,9 +42,13 @@ func Login(ctx *gin.Context) {
 		return
 	}
 
-	// TODO: ADD JWT
+	token, err := auth.CreateToken(user.Name, user.Email)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
-	ctx.JSON(http.StatusOK, nil)
+	ctx.JSON(http.StatusOK, gin.H{"token": token})
 }
 
 func Create(ctx *gin.Context) {
